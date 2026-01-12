@@ -19,6 +19,25 @@ npm run dev
 npm start
 ```
 
+## Deploy na Vercel
+
+1. Instale a CLI da Vercel:
+```bash
+npm i -g vercel
+```
+
+2. Faça login na Vercel:
+```bash
+vercel login
+```
+
+3. Deploy:
+```bash
+vercel --prod
+```
+
+O projeto está configurado para usar banco em memória na Vercel automaticamente.
+
 ## API Endpoints
 
 ### Jogadores
@@ -29,13 +48,18 @@ npm start
 - `DELETE /api/players/:id` - Remove jogador
 - `GET /api/players/stats` - Estatísticas dos jogadores
 
+### Jogos
+
+- `POST /api/games` - Salva resultado de jogo
+- `GET /api/games` - Lista jogos
+
 ### Exemplos de uso
 
 #### Criar jogador
 ```bash
 curl -X POST http://localhost:3001/api/players \
   -H "Content-Type: application/json" \
-  -d '{"name": "Novo Jogador", "level": "B"}'
+  -d '{"name": "Novo Jogador", "rating": 4.5}'
 ```
 
 #### Listar jogadores
@@ -47,7 +71,7 @@ curl http://localhost:3001/api/players
 ```bash
 curl -X PUT http://localhost:3001/api/players/ID_DO_JOGADOR \
   -H "Content-Type: application/json" \
-  -d '{"name": "Nome Atualizado", "level": "A"}'
+  -d '{"name": "Nome Atualizado", "rating": 3.5}'
 ```
 
 #### Remover jogador
@@ -61,6 +85,11 @@ curl -X DELETE http://localhost:3001/api/players/ID_DO_JOGADOR
 {
   "id": "uuid-gerado-automaticamente",
   "name": "Nome do Jogador",
-  "rating": 4 // 0 a 5 estrelas
+  "rating": 4.5 // 0 a 5 com incrementos de 0.5
 }
 ```
+
+## Ambiente
+
+- **Desenvolvimento**: Usa SQLite local (`database.js`)
+- **Produção (Vercel)**: Usa banco em memória (`database-vercel.js`)

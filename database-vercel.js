@@ -168,6 +168,50 @@ export const playerOperations = {
   }
 };
 
+// Operações CRUD para jogos
+export const gameOperations = {
+  // Criar novo jogo
+  create: (team1Players, team2Players, team1Score = 0, team2Score = 0) => {
+    try {
+      const id = uuidv4();
+      const sql = `
+        INSERT INTO games (id, team1_players, team2_players, team1_score, team2_score) 
+        VALUES (?, ?, ?, ?, ?)
+      `;
+      
+      const result = db.prepare(sql).run(
+        id, 
+        JSON.stringify(team1Players), 
+        JSON.stringify(team2Players), 
+        team1Score, 
+        team2Score
+      );
+      
+      return result.changes > 0 ? id : null;
+    } catch (error) {
+      console.error('Erro ao criar jogo:', error);
+      return null;
+    }
+  },
+
+  // Listar todos os jogos
+  getAll: () => {
+    try {
+      const sql = 'SELECT * FROM games ORDER BY date DESC';
+      const games = db.prepare(sql).all();
+      
+      return games.map(game => ({
+        ...game,
+        team1_players: JSON.parse(game.team1_players),
+        team2_players: JSON.parse(game.team2_players)
+      }));
+    } catch (error) {
+      console.error('Erro ao buscar jogos:', error);
+      return [];
+    }
+  }
+};
+
 // Inicializar banco ao importar o módulo
 initDatabase();
 

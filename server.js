@@ -1,9 +1,14 @@
 import express from 'express';
 import cors from 'cors';
-import { playerOperations, gameOperations } from './database.js';
+
+// Usar database-vercel.js em produção (Vercel) ou database.js em desenvolvimento
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+const databaseModule = isProduction ? './database-vercel.js' : './database.js';
+
+const { playerOperations, gameOperations } = await import(databaseModule);
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -154,8 +159,13 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-  console.log(`📊 API disponível em http://localhost:${PORT}/api/players`);
-  console.log(`💾 Banco de dados SQLite inicializado`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+    console.log(`📊 API disponível em http://localhost:${PORT}/api/players`);
+    console.log(`💾 Banco de dados SQLite inicializado`);
+  });
+}
+
+// Exportar para Vercel
+export default app;
